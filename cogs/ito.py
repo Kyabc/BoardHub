@@ -5,7 +5,7 @@ import discord
 from discord import ApplicationContext, SlashCommandGroup
 from discord.ext import commands
 
-from src.model import BaseIto
+from utils.model import BaseIto
 
 TOPIC_PATH = "cogs/resources/ito_topic.json"
 

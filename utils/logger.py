@@ -3,7 +3,7 @@ import logging.handlers
 import os
 from datetime import datetime
 
-from src.settings import settings
+from utils.settings import settings
 
 
 def set_logger():

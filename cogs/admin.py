@@ -12,7 +12,7 @@ class Admin(commands.Cog):
     @admin.command(name="about", description="Shows basic information of this bot.")
     async def about(self, ctx: ApplicationContext) -> None:
         owner_url = "https://discord.com/channels/514366500715364352"
-        github_project = "https://github.com/Kyabc/discord-ito-bot"
+        github_project = "https://github.com/Kyabc/BoardHub"
 
         embed = discord.Embed(color=0xFFFFFF)
         embed.set_author(name="ito bot", url=github_project)

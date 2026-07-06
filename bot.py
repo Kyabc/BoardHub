@@ -2,20 +2,17 @@ from __future__ import annotations
 
 import logging
 
-import aiohttp
 import discord
 
 from src.settings import settings
 
 logger = logging.getLogger(__name__)
 
+BOT_VERSION = "1.0.0"
 initial_extensions = ["cogs.admin", "cogs.ito"]
 
 intents = discord.Intents.default()
 intents.message_content = True
-
-
-BOT_VERSION = "1.0.0"
 
 
 class BoardGameBot(discord.Bot):
@@ -26,7 +23,6 @@ class BoardGameBot(discord.Bot):
             case_insensitive=True,
             intents=intents,
         )
-        self.session: aiohttp.ClientSession = None
         self.bot_version = BOT_VERSION
 
     @property
@@ -34,10 +30,7 @@ class BoardGameBot(discord.Bot):
         return self.bot_app_info.owner
 
     async def on_ready(self) -> None:
-        activity = discord.Activity(
-            type=discord.ActivityType.playing,
-            name=f"/help | ito bot v{self.bot_version}"
-        )
+        activity = discord.Activity(type=discord.ActivityType.playing, name=f"/help | ito bot v{self.bot_version}")
         await self.change_presence(activity=activity)
 
         try:

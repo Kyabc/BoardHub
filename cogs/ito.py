@@ -17,26 +17,19 @@ def load_topic() -> list:
 
 
 def create_embed(description: str = "") -> discord.Embed:
-    embed = discord.Embed(
-        title="🂠 ito",
-        color=0xB0BFC6,
-        description=description
-    )
+    embed = discord.Embed(title="🂠 ito", color=0xB0BFC6, description=description)
     # embed.set_author(name="GAME: ito")
     return embed
 
 
 def create_no_game_embed() -> discord.Embed:
-    return create_embed(
-        "ゲームがありません。\n"
-        "`/ito create`で新しいゲームを作成できます。"
-    )
+    return create_embed("ゲームがありません。\n`/ito create`で新しいゲームを作成できます。")
 
 
 class Ito(commands.Cog):
     ito = SlashCommandGroup(name="ito", description="description")
 
-    def __init__(self, bot:commands.bot):
+    def __init__(self, bot: commands.bot):
         self.bot = bot
         self.game_state: dict[int, BaseIto] = {}
         self.topics: list[str] = load_topic()
@@ -50,30 +43,24 @@ class Ito(commands.Cog):
     async def create(self, ctx: ApplicationContext) -> None:
         channel_id = ctx.channel_id
         if self.check_state(channel_id):
-            embed = create_embed(
-                "作成済みのゲームがあります。\n"
-                "`/ito end`でゲームを終了してください。"
-            )
+            embed = create_embed("作成済みのゲームがあります。\n`/ito end`でゲームを終了してください。")
             await ctx.response.send_message(embed=embed)
 
         self.game_state[channel_id] = BaseIto()
         gstate = self.game_state[channel_id]
         gstate.join(ctx.user.id)
         gstate.state = True
-        embed = create_embed(
-            f"{ctx.user.display_name}がゲームを作成しました！\n"
-            "`/ito join` でゲームに参加できます。"
-        )
+        embed = create_embed(f"{ctx.user.display_name}がゲームを作成しました！\n`/ito join` でゲームに参加できます。")
         embed.add_field(
-                name="遊び方",
-                value=(
-                    "`/ito join` : ゲームに参加\n"
-                    "`/ito leave` : ゲームから抜ける\n"
-                    "`/ito start` : ゲーム開始\n"
-                    "`/ito end` : ゲーム終了"
-                ),
-                inline=False
-            )
+            name="遊び方",
+            value=(
+                "`/ito join` : ゲームに参加\n"
+                "`/ito leave` : ゲームから抜ける\n"
+                "`/ito start` : ゲーム開始\n"
+                "`/ito end` : ゲーム終了"
+            ),
+            inline=False,
+        )
         await ctx.response.send_message(embed=embed)
 
     @ito.command(name="end", description="End the currnet game")
@@ -95,21 +82,12 @@ class Ito(commands.Cog):
 
         gstate = self.game_state[channel_id]
         if not gstate.join(ctx.user.id):
-            embed = create_embed(
-                "ゲームに参加済みです。\n"
-                "`/ito start` でゲームを開始できます。"
-            )
+            embed = create_embed("ゲームに参加済みです。\n`/ito start` でゲームを開始できます。")
             await ctx.response.send_message(embed=embed, ephemeral=True)
         else:
-            embed = create_embed(
-                f"{ctx.user.display_name}が参加しました！"
-            )
+            embed = create_embed(f"{ctx.user.display_name}が参加しました！")
             embed.set_thumbnail(url=ctx.user.display_avatar.url)
-            embed.add_field(
-                    name="現在の参加者",
-                    value=self.participants_str(ctx, gstate.players),
-                    inline=False
-                )
+            embed.add_field(name="現在の参加者", value=self.participants_str(ctx, gstate.players), inline=False)
             await ctx.response.send_message(embed=embed)
 
     @ito.command(name="leave", description="leave the game")
@@ -121,47 +99,32 @@ class Ito(commands.Cog):
 
         gstate = self.game_state[channel_id]
         if ctx.user.id not in gstate.players:
-            embed = create_embed(
-                f"{ctx.user.display_name}はゲームに参加していません。\n"
-                "`/ito join`でゲームに参加できます。"
-            )
+            embed = create_embed(f"{ctx.user.display_name}はゲームに参加していません。\n`/ito join`でゲームに参加できます。")
             await ctx.response.send_message(embed=embed)
         else:
             gstate.players.remove(ctx.user.id)
             embed = create_embed(f"{ctx.user.display_name}がゲームから退出しました。")
-            embed.add_field(
-                name="現在の参加者",
-                value=self.participants_str(ctx, gstate.players),
-                inline=False
-            )
+            embed.add_field(name="現在の参加者", value=self.participants_str(ctx, gstate.players), inline=False)
             await ctx.response.send_message(embed=embed)
-
 
     @ito.command(name="start", description="Start the game and deal cards")
     async def start(self, ctx: ApplicationContext, topic: str = "") -> None:
         channel_id = ctx.channel_id
         if not self.check_state(channel_id):
-            embed = create_embed(
-                "ゲームがありません。\n"
-                "`/ito create`で新しいゲームを作成できます。"
-            )
+            embed = create_embed("ゲームがありません。\n`/ito create`で新しいゲームを作成できます。")
             await ctx.response.send_message(embed=embed)
             return
 
         gstate = self.game_state[channel_id]
         n = len(gstate.players)
         if n < 2:
-            embed = create_embed(
-                "ゲームの開始には2人以上の参加が必要です。\n"
-                "`/ito join`でゲームに参加できます。"
-            )
+            embed = create_embed("ゲームの開始には2人以上の参加が必要です。\n`/ito join`でゲームに参加できます。")
             await ctx.response.send_message(embed=embed, ephemeral=True)
             return
 
         if n > 100:
             embed = create_embed(
-                "参加人数が100人を超えているためゲームをプレイできません。\n"
-                "`/ito leave`でゲームから退出してください。"
+                "参加人数が100人を超えているためゲームをプレイできません。\n`/ito leave`でゲームから退出してください。"
             )
             await ctx.response.send_message(embed=embed, ephemeral=True)
             return
@@ -178,10 +141,7 @@ class Ito(commands.Cog):
             await user.send(content=f"🂠 あなたの手札は **{number}** です。\nお題は「{topic}」です。")
 
         # send topic
-        embed = create_embed(
-            "ゲームを開始します！\n"
-            "DMを確認してください。"
-        )
+        embed = create_embed("ゲームを開始します！\nDMを確認してください。")
         embed.add_field(name="今回のお題", value=topic)
         await ctx.response.send_message(embed=embed)
 
@@ -189,10 +149,7 @@ class Ito(commands.Cog):
     async def open_cards(self, ctx: ApplicationContext) -> None:
         channel_id = ctx.channel_id
         if not self.check_state(channel_id):
-            embed = create_embed(
-                "ゲームがありません。\n"
-                "`/ito create`で新しいゲームを作成できます。"
-            )
+            embed = create_embed("ゲームがありません。\n`/ito create`で新しいゲームを作成できます。")
             await ctx.response.send_message(embed=embed)
             return
 
@@ -203,23 +160,14 @@ class Ito(commands.Cog):
             name = member.display_name if member else "Unknown"
             lines.append(f"**{num:>3}** ： {name}")
         embed = create_embed("🎴 カード公開")
-        embed.add_field(
-            name="結果",
-            value="\n".join(lines),
-            inline=False
-        )
+        embed.add_field(name="結果", value="\n".join(lines), inline=False)
         await ctx.response.send_message(embed=embed)
-
-
 
     @ito.command(name="kick", description="Remove a player from the game")
     async def kick(self, ctx: ApplicationContext, user: discord.User) -> None:
         channel_id = ctx.channel_id
         if not self.check_state(channel_id):
-            embed = create_embed(
-                "ゲームがありません。\n"
-                "`/ito create`で新しいゲームを作成できます。"
-            )
+            embed = create_embed("ゲームがありません。\n`/ito create`で新しいゲームを作成できます。")
             await ctx.response.send_message(embed=embed)
             return
 
@@ -245,7 +193,7 @@ class Ito(commands.Cog):
             "**`/ito end`**: ゲームを終了します。\n"
             "**`/ito kick`**: 指定したユーザをキックします。\n"
             "**`/ito state`**: 現在の参加者を表示します。\n",
-            inline=False
+            inline=False,
         )
         await ctx.response.send_message(embed=embed)
 
@@ -253,20 +201,13 @@ class Ito(commands.Cog):
     async def state(self, ctx: ApplicationContext) -> None:
         channel_id = ctx.channel_id
         if not self.check_state(channel_id):
-            embed = create_embed(
-                "ゲームがありません。\n"
-                "`/ito create`で新しいゲームを作成できます。"
-            )
+            embed = create_embed("ゲームがありません。\n`/ito create`で新しいゲームを作成できます。")
             await ctx.response.send_message(embed=embed)
             return
 
         gstate = self.game_state[channel_id]
         embed = create_embed("`/ito join`でゲームに参加できます。")
-        embed.add_field(
-            name="現在の参加者",
-            value=self.participants_str(ctx, gstate.players),
-            inline=False
-        )
+        embed.add_field(name="現在の参加者", value=self.participants_str(ctx, gstate.players), inline=False)
         await ctx.response.send_message(embed=embed)
 
     def participants_str(self, ctx: ApplicationContext, players: list[int]) -> str:

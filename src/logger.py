@@ -15,15 +15,10 @@ def set_logger():
 
     streamHandler = logging.StreamHandler()
     fileHandler = logging.handlers.RotatingFileHandler(
-        f"./{settings.LOG_DIR}/{now.strftime('%Y-%m-%d')}.log",
-        maxBytes=1000000,
-        backupCount=5,
-        encoding="utf-8"
+        f"./{settings.LOG_DIR}/{now.strftime('%Y-%m-%d')}.log", maxBytes=1000000, backupCount=5, encoding="utf-8"
     )
 
-    formatter = logging.Formatter(
-        '%(asctime)s| %(levelname)-5s | %(name)s.%(funcName)s.%(lineno)d | %(message)s'
-    )
+    formatter = logging.Formatter("%(asctime)s| %(levelname)-5s | %(name)s.%(funcName)s.%(lineno)d | %(message)s")
 
     streamHandler.setFormatter(formatter)
     fileHandler.setFormatter(formatter)

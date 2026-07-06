@@ -6,7 +6,7 @@ from discord.ext import commands
 class Admin(commands.Cog):
     admin = SlashCommandGroup(name="admin", description="description")
 
-    def __init__(self, bot:commands.bot):
+    def __init__(self, bot: commands.bot):
         self.bot = bot
 
     @admin.command(name="about", description="Shows basic information of this bot.")

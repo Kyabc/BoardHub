@@ -1,8 +1,11 @@
 # 🤖 BoardHub
+[🔗 English README](https://github.com/Kyabc/BoardHub/blob/main/README.en.md)
 
 Discord 上でボードゲームを遊ぶための Bot です。
 
 現在は **ito** を遊べます。今後、対応ゲームを順次追加していく予定です。
+
+
 
 ---
 
